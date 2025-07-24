@@ -16,7 +16,9 @@
     "build:client": "vite build",
    "build:server": "vite build --config vite.config.server.js",
 
- "start": "node dist/server/node-build.mjs",
+ "start": "node dist/server/index.mjs",
+
+
 
 
     "test": "vitest --run",
