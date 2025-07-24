@@ -1,28 +1,50 @@
-import express from "express";
+import { defineConfig } from "vite";
 import path from "path";
-import { fileURLToPath } from "url";
 
-// Setup for ES module __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Create express app
-const app = express();
-const port = process.env.PORT || 3000;
-
-// ✅ Serve frontend from compiled Vite build
-const spaPath = path.resolve(__dirname, "../../spa");
-app.use(express.static(spaPath));
-
-// ✅ React Router fallback (client-side routing)
-app.get("*", (req, res) => {
-  if (req.path.startsWith("/api/")) {
-    return res.status(404).json({ error: "API endpoint not found" });
-  }
-  res.sendFile(path.join(spaPath, "index.html"));
-});
-
-// ✅ Start server
-app.listen(port, () => {
-  console.log(`🚀 Server running on port ${port}`);
+export default defineConfig({
+  build: {
+    lib: {
+      entry: path.resolve(__dirname, "server/node-build.ts"),
+      name: "server",
+      fileName: "index",
+      formats: ["es"],
+    },
+    outDir: "dist/server",
+    target: "node22",
+    ssr: true,
+    rollupOptions: {
+      external: [
+        "fs",
+        "path",
+        "url",
+        "http",
+        "https",
+        "os",
+        "crypto",
+        "stream",
+        "util",
+        "events",
+        "buffer",
+        "querystring",
+        "child_process",
+        "express",
+        "cors",
+      ],
+      output: {
+        format: "es",
+        entryFileNames: "[name].js",
+      },
+    },
+    minify: false,
+    sourcemap: true,
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./client"),
+      "@shared": path.resolve(__dirname, "./shared"),
+    },
+  },
+  define: {
+    "process.env.NODE_ENV": '"production"',
+  },
 });
