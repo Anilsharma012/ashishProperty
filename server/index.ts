@@ -595,10 +595,15 @@ export function createServer() {
 }
 
 // For production
+// For production
 if (import.meta.url === `file://${process.argv[1]}`) {
   const app = createServer();
-  const port = process.env.PORT || 3000;
+  const port = Number(process.env.PORT);
+  if (!port) {
+    throw new Error("❌ PORT is not defined in environment variables.");
+  }
   app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`🚀 Server running on port ${port}`);
   });
 }
+
